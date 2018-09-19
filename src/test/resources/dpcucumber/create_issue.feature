@@ -1,5 +1,5 @@
-Feature: Create issue
- Create issue
+Feature: Bookings
+ Bookings
 
 	Scenario: Get all bookings
 		Given a user want to get all bookings
