@@ -43,11 +43,10 @@ public class Payload {
 	public static  String getCreateBooking()
 	{
 		String body = "{\n" +
-				"\t\"pricePerNight\":200,\n" +
-				"\t\"hotelName\": \"interconInternational\",\n" +
-				"\t\"nbOfNights\":3\n" +
+				"\t\"name\":\"Trump\",\n" +
+				"\t\"gender\": \"F\",\n" +
+				"\t\"Hobby\": \"Money\"\n" +
 				"}";
-
 		return body;
 	}
 }
