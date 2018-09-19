@@ -1,56 +1,96 @@
-package com.example.bookingdemo;
+package dpcucumber;
 
-import org.springframework.web.bind.annotation.*;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.When;
+import files.Payload;
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import cucumber.api.java.en.Then;
 
+import static io.restassured.RestAssured.given;
+import static org.junit.Assert.*;
+
+import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Properties;
 
-@RestController
-@RequestMapping(value = "/bookings")
-public class BookingController {
-    /*private List<HotelBooking> bookings;*/
-    BookingRepository bookingRepository;
-    public BookingController(BookingRepository bookingRepository)
-    {
-        this.bookingRepository = bookingRepository;
+
+public class Stepdefs {
+    Properties prop = new Properties();
+
+    private Response create_res;
+    private Response all_res;
+    private Response delete_res;
+    private  String id;
+
+
+    @Given("^a user want to get all team members$")
+    public void a_user_want_to_get_all_team_members() throws Exception {
+
+        FileInputStream files = new FileInputStream("src\\test\\java\\config\\env.properties");
+        prop.load(files);
+    }
+    @When("^a request is sent$")
+    public void a_request_is_sent() throws Exception {
+        RestAssured.baseURI= prop.getProperty("BookingsHost");
+        this.all_res = given().
+                when().get("/bookings/all");
     }
 
-   /* public BookingController(){
-        bookings = new ArrayList<>();
-        bookings.add(new HotelBooking("Marriot", 200.50,3));
-        bookings.add(new HotelBooking("Ibis", 90,4));
-        bookings.add(new HotelBooking("Novotel", 140,1));
-    }*/
-
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public List<HotelBooking> getAll()
-    {
-        /*return bookings;*/
-        return this.bookingRepository.findAll();
+    @Then("^all team members should be returned$")
+    public void all_team_members_should_be_returned() throws Exception {
+        assertEquals(200,all_res.statusCode());
     }
 
-    /*@RequestMapping(value = "/affordable/{price}", method = RequestMethod.GET)
-    public List<HotelBooking> getAffordable(@PathVariable double price)
-    {
-        *//*return bookings.stream().filter(x -> x.getPricePerNight() < price ).collect(Collectors.toList());*//*
-        return this.bookingRepository.findByPricePerNightLessThan(price);
-    }*/
+    @Given("^a team member's record$")
+    public void a_team_member_s_record() throws Exception {
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public List<HotelBooking> create(@RequestBody HotelBooking hotelBooking)
-    {
-        /*bookings.add(hotelBooking);
-        return bookings;*/
-        bookingRepository.save(hotelBooking);
-        return bookingRepository.findAll();
+        FileInputStream files = new FileInputStream("src\\test\\java\\config\\env.properties");
+        prop.load(files);
     }
 
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public List<HotelBooking> delete(@PathVariable long id)
-    {
+    @When("^request to create a new team members$")
+    public void request_to_create_a_new_team_members() throws Exception {
+        RestAssured.baseURI= prop.getProperty("BookingsHost");
+        this.create_res = given().header("Content-Type","application/json").
+                body(Payload.getCreateBooking()).
+                when().post("/bookings/create");
+    }
 
-        bookingRepository.deleteById(id);
-        return bookingRepository.findAll();
+    @Then("^a new team members should be created$")
+    public void a_new_team_members_should_be_created() throws Exception {
+        String res = this.create_res.asString();
+
+        JsonPath js = new JsonPath(res);
+        //int count = js.getInt("size");
+
+        ArrayList<String> ids = js.get("id");
+
+        this.id = String.valueOf(ids.get(ids.size()-1));
+
+        System.out.println(this.id);
+
+        assertEquals(200,create_res.statusCode());
+    }
+
+    @Given("^a team members id$")
+    public void a_team_members_id() throws Exception {
+        FileInputStream files = new FileInputStream("src\\test\\java\\config\\env.properties");
+        prop.load(files);
+    }
+
+    @When("^request to delete this team members$")
+    public void request_to_delete_this_team_members() throws Exception {
+
+        String id = "3";
+        RestAssured.baseURI= prop.getProperty("BookingsHost");
+        this.delete_res = given().pathParam("id",id).
+                when().get("/bookings/delete/{id}");
+    }
+
+    @Then("^this team members record should be deleted$")
+    public void this_team_members_record_should_be_deleted() throws Exception {
+        assertEquals(200,delete_res.statusCode());
     }
 }
