@@ -100,7 +100,7 @@ public class Stepdefs {
     @When("^request to delete this record$")
     public void request_to_delete_this_record() throws Exception {
         // Write code here that turns the phrase above into concrete actions
-        String id = "3";
+        String id = "2";
         RestAssured.baseURI= prop.getProperty("BookingsHost");
         this.delete_res = given().pathParam("id",id).
                 when().get("/bookings/delete/{id}");
