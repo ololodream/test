@@ -1,17 +1,17 @@
 Feature: Bookings
  Bookings
 
-	Scenario: Get all bookings
-		Given a user want to get all bookings
+	Scenario: Get all team members
+		Given a user want to get all team members
 		When a request is sent
-		Then all bookings should be returned
+		Then all team members should be returned
 
-	Scenario: Create new a booking
-		Given a booking record
-		When request to create a new booking
-		Then a new booking should be created
+	Scenario: Create new a member
+		Given a team member's record
+		When request to create a new team members
+		Then a new team members should be created
 
 	Scenario: Delete a booking by id
-		Given a booing id
-		When request to delete this record
-		Then this booking record should be deleted
+		Given a team members id
+		When request to delete this team members
+		Then this team members record should be deleted
